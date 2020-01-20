@@ -20,6 +20,11 @@ export class OutUserDto{
   @Expose()
   @IsNotEmpty()
   @IsString()
+  githubUsername: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @IsString()
   pictureUrl: String;
 
   @Expose()

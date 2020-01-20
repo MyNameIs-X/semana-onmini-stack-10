@@ -4,7 +4,7 @@ export class InUserDto{
 
   @IsNotEmpty()
   @IsString()
-  githubUserName: String;
+  githubUsername: String;
 
   @IsNotEmpty()
   @IsString()

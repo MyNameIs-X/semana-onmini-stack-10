@@ -11,11 +11,11 @@ export class UserService{
   async store(inUserDto: InUserDto){
     try{
 
-      let user = await User.findOne({ githubUserName: inUserDto.githubUserName });
+      let user = await User.findOne({ githubUsername: inUserDto.githubUsername });
 
       if(!user){
         const techs = parseStringToArray(inUserDto.techs);
-        const response = await axios.get(`https://api.github.com/users/${inUserDto.githubUserName}`);
+        const response = await axios.get(`https://api.github.com/users/${inUserDto.githubUsername}`);
         
         const location = {
           type: "Point",
@@ -24,7 +24,7 @@ export class UserService{
         
         user = await User.create({
           bio: response.data.bio,
-          githubUserName: inUserDto.githubUserName,
+          githubUsername: inUserDto.githubUsername,
           name: inUserDto.name,
           pictureUrl: response.data.avatar_url,
           techs,
@@ -34,7 +34,7 @@ export class UserService{
 
       return user;
     }catch (err){
-      return false
+      return false;
     }
   }
 
