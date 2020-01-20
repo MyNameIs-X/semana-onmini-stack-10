@@ -1,7 +1,14 @@
 <script>
 import axios from './plugins/axios';
+import userForm from './components/user-form.vue';
+import listUser from './components/list-users.vue';
 export default {
   name: 'app',
+  
+  components: {
+    listUser,
+    userForm
+  },
 
   async created(){
     try{
@@ -13,52 +20,18 @@ export default {
     }catch(err){
       console.log(err.message);
     }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        this.user.latitude = position.coords.latitude,
-        this.user.longitude = position.coords.longitude
-      },
-      (err) => {
-        console.log(err);
-      },
-      {
-        timeout: 30000
-      }
-    );
   },
+
 
   data(){
     return {
-      user: {
-        githubUsername: '',
-        latitude: 0,
-        longitude: 0,
-        name: '',
-        techs: '',
-      },
       devs: []
     }
   },
 
   methods: {
-    async handlerAddDev(e){
-      try{
-        this.user.latitude = Number(this.user.latitude);
-        this.user.longitude = Number(this.user.longitude);
-        const response = await axios.post('/user', this.user);
-        if(response.data && response.data.ok == true){
-          delete response.data.ok;
-          this.devs.push(response.data)
-          this.user.githubUsername = '';
-          this.user.latitude = '';
-          this.user.longitude = '';
-          this.user.name = '';
-          this.user.techs = '';
-        }
-      }catch(err){
-        console.log(err);
-      }
+    addUserList(e){
+      this.devs.push(e);
     }
   }
 }
@@ -68,52 +41,10 @@ export default {
   <div id="app">
     <aside class="sidebar">
       <strong>Cadastrar</strong>
-      <form v-on:submit.prevent="handlerAddDev()">
-        <div class="input-group">
-          <div class="input-block">
-            <label for="name">Nome</label>
-            <input type="text" id="name" v-model="user.name" required>
-          </div><!-- input block -->
-          <div class="input-block">
-            <label for="github_username">Usuário do Github</label>
-            <input type="text" id="github_username" v-model="user.githubUsername" required>
-          </div><!-- input block -->
-        </div><!-- input group -->
-
-        <div class="input-block">
-          <label for="techs">Tecnologias</label>
-          <input type="text" id="techs" v-model="user.techs" required>
-        </div><!-- input block -->
-        
-        <div class="input-group">
-          <div class="input-block">
-            <label for="latitude">Latitude</label>
-            <input type="number" id="latitude" step="any" v-model="user.latitude" required />
-          </div><!-- input block -->
-
-          <div class="input-block">
-            <label for="logitude">Logintude</label>
-            <input type="number" id="logitude" step="any" v-model="user.longitude" required />
-          </div><!-- input block -->
-        </div><!-- input group -->
-
-        <button type="submit">Salvar</button>
-      </form>
+      <userForm v-on:addUser="addUserList" />
     </aside><!-- sidebar -->
     <main class="dev-list">
-      <ul>
-        <li class="dev-item" v-for="(dev, i) in devs" :key="i">
-          <header>
-            <img v-bind:src="dev.pictureUrl" v-bind:alt="dev.name" />
-            <div class="user-info">
-              <strong>{{ dev.name }}</strong>
-              <span>{{ dev.techs.join(', ') }}</span>
-            </div>
-          </header>
-          <p>{{ dev.bio || 'Bio não disponível' }}</p>
-          <a v-bind:href="`https://github.com/${dev.githubUsername}`" target="_blank">Acessar Perfil no Github</a>
-        </li>
-      </ul>
+      <listUser v-bind:devs="devs" />
     </main>
   </div>
 </template>
@@ -149,56 +80,6 @@ export default {
     color: #333;
   }
 
-  .sidebar form{
-    margin-top: 30px;
-  }
-
-  .sidebar form .input-block{
-    margin-top: 20px;
-  }
-
-  .sidebar form .input-group{
-    margin-top: 20px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  .sidebar form .input-block label{
-    color: #ACACAC;
-    font-size: 14px;
-    font-weight: bold;
-    display: block;
-  }
-
-  .sidebar form .input-block input{
-    width: 100%;
-    height: 32px;
-    font-size: 14px;
-    color: #666;
-    border: 0;
-    border-bottom: 1px solid #eee;
-    background: white;
-  }
-
-  .sidebar form button[type="submit"]{
-    width: 100%;
-    border: 0;
-    margin-top: 30px;
-    background: #7d40e7;
-    border-radius: 2px;
-    padding: 15px 20px;
-    font-size: 16px;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color .5s;
-  }
-
-  .sidebar form button[type="submit"]:hover{
-    background-color: #6931ca;
-  }
-  
   .dev-list{
     flex: 1;
   }
