@@ -1,6 +1,10 @@
 import React from 'react';
 import Routes from './src/router';
-import { StatusBar } from 'react-native';
+import { StatusBar, YellowBox } from 'react-native';
+
+YellowBox.ignoreWarnings([
+  'Unrecognized WebSockect'
+])
 
 export default function App() {
   return (

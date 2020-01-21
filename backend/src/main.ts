@@ -2,7 +2,11 @@ import "reflect-metadata";
 import { createExpressServer, useContainer } from 'routing-controllers';
 import { Container } from 'typedi';
 import { controllers } from './controllers';
+import { setupWebsocket } from './socket';
 import mongoose from 'mongoose';
+
+import http from 'http';
+
 import * as dotenv from 'dotenv-flow';
 dotenv.config();
 
@@ -23,8 +27,12 @@ try{
 useContainer(Container);
 
 // Create Server
-console.log('[+] Application is running at port 4000');
-createExpressServer({
+const app = createExpressServer({
   controllers: [...controllers],
   cors: true
-}).listen(4000);
+});
+
+console.log('[+] Application is running at port 4000');
+const server = new http.Server(app);
+setupWebsocket(server);
+server.listen(4000);

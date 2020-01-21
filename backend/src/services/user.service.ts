@@ -1,6 +1,7 @@
 import { Service } from 'typedi';
 import { InUserDto } from '../dto';
 import { parseStringToArray } from '../utils';
+import { findConnections, sendMessage } from '../socket';
 import axios from 'axios';
 import User from '../models/user.model';
 
@@ -27,11 +28,15 @@ export class UserService{
           githubUsername: inUserDto.githubUsername,
           name: inUserDto.name,
           pictureUrl: response.data.avatar_url,
-          techs,
+          techs: techs,
           location
         });
-      }
 
+        // Filtrar conexões
+        const sendSocketMessageTo = findConnections({ latitude: inUserDto.latitude, longitude: inUserDto.longitude }, techs);
+        sendMessage(sendSocketMessageTo, 'newUSer', user);
+      }
+      
       return user;
     }catch (err){
       return false;
